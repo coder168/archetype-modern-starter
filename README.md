@@ -2,6 +2,7 @@ Archetype Modern Starter
 ========================
 
 [![Build Status](https://travis-ci.org/coder168/archetype-modern-starter.svg?branch=master)](https://travis-ci.org/coder168/archetype-modern-starter)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.coder168/archetype-modern-starter.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.coder168%22%20AND%20a:%22archetype-modern-starter%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 What is it
