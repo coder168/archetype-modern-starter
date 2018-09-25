@@ -18,14 +18,36 @@
     </license>
   </licenses>
 
+  <organization>
+    <name>Coder168</name>
+    <url>https://github.com/coder168</url>
+  </organization>
+
   <developers>
     <developer>
       <name>Ming Li</name>
       <email>coder168@users.noreply.github.com</email>
-      <organization>coder168</organization>
+      <organization>Coder168</organization>
       <organizationUrl>https://github.com/coder168</organizationUrl>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/coder168/archetype-modern-starter.git</connection>
+    <developerConnection>scm:git:ssh://github.com:coder168/archetype-modern-starter.git</developerConnection>
+    <url>https://github.com/coder168/archetype-modern-starter</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/coder168/archetype-modern-starter/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/coder168/archetype-modern-starter</url>
+  </ciManagement>
 
   <properties>
     <archetype-plugin.version>3.0.1</archetype-plugin.version>
@@ -50,5 +72,147 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>ossrh-release</id>
+          
+      <distributionManagement>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+      </distributionManagement>
+          
+      <properties>
+        <source-plugin.version>3.0.1</source-plugin.version>
+        <javadoc-plugin.version>3.0.1</javadoc-plugin.version>
+        <jar-plugin.version>3.1.0</jar-plugin.version>
+        <gpg-plugin.version>1.6</gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+        <release-plugin.version>2.5.3</release-plugin.version>
+      </properties>
+          
+      <build>
+        <plugins>
+          <!-- create a source jar for OSSRH requirement. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${source-plugin.version}</version>
+            <!-- stop to add two maven files: pom.xml & pom.properties. 
+            <configuration>
+              <archive>
+                <addMavenDescriptor>false</addMavenDescriptor>
+              </archive>
+            </configuration>
+            -->
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- create a javadoc jar for OSSRH requirement. -->
+          <!-- javadoc plugin does not work with maven archetype project. 
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${javadoc-plugin.version}</version>
+              <configuration>
+                <encoding>UTF-8</encoding>
+                <archive>
+                  <addMavenDescriptor>false</addMavenDescriptor>
+                </archive>
+              </configuration>
+              <executions>
+                  <execution>
+                      <id>attach-javadocs</id>
+                      <goals>
+                          <goal>jar</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+          -->
+          <!-- create a fake javadoc jar contain README.md for OSSRH requirement. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>${jar-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>fake-javadoc-jar</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <classifier>javadoc</classifier>
+                  <classesDirectory>${basedir}</classesDirectory>
+                  <includes>
+                    <include>README.md</include>
+                  </includes>
+                  <archive>
+                    <addMavenDescriptor>false</addMavenDescriptor>
+                  </archive>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- sign the components for OSSRH requirement. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${gpg-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- provide support to access staging functionality to remote Nexus server OSSRH. -->
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus-staging-maven-plugin.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+          <!-- provide support to release deployment in two steps: prepare and perform. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>${release-plugin.version}</version>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <useReleaseProfile>false</useReleaseProfile>
+              <!-- <releaseProfiles>ossrh-release</releaseProfiles>-->
+              <goals>deploy</goals>
+              <!-- git use a local checkout instead of checkout from the upstream repo -->
+              <localCheckout>true</localCheckout>
+              <!-- git will not push changes to the upstream repo -->
+              <pushChanges>false</pushChanges>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
