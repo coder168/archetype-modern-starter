@@ -18,7 +18,7 @@ The generated project uses the following technologies:
 
 * java 8
 * maven 3.5.x
-* log4j 2.11.1
+* log4j 2.20.0
 * junit 4.12
 
 How to use
